@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  validate-pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
