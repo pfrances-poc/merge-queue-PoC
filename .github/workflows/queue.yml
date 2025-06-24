@@ -4,10 +4,12 @@ on:
   merge_group:
 
 jobs:
-  validate-pr-merge:
+  validate-pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Merge queue specific check
         run: echo "✅ This is the merge queue check"
+      - name: Should Fail
+        run: false
