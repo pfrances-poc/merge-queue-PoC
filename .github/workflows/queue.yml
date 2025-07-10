@@ -9,13 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Merge queue specific check
-        run: echo "✅ This is the merge queue check"
-      - name: show context
-        run:  echo "${{ github.event.merge_group.base_sha }}"
-      
-      - run: "git diff --name-only  --submodule=log ${{ github.base_ref || github.event.merge_group.base_sha }} -- .github/** || true" 
+        uses: actions/checkout@v4
+     
+      - run: |
+          base_sha="${{ github.base_sha || github.event.merge_group.base_sha }}"
+          git fetch origin $base_sha
+          git diff --name-only  --submodule=log $base_sha -- .github/** || true
       
       - name: Should Fail
         run: ${{ github.event_name == 'pull_request' }}
