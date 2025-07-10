@@ -43,8 +43,8 @@ jobs:
           echo "📁 Paths to monitor:"
           echo "${{ inputs.paths }}"
 
-          IFS=$'\n' read -r -d '' -a raw_paths <<< "${{ inputs.paths }}"
-          IFS=$'\n' read -r -d '' -a mappings <<< "${{ inputs.branch_env_map }}"
+          IFS=$'\n' read -r -a raw_paths <<< "${{ inputs.paths }}"
+          IFS=$'\n' read -r -a mappings <<< "${{ inputs.branch_env_map }}"
 
           pathspecs=()
           for path in "${raw_paths[@]}"; do
