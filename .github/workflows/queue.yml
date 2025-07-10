@@ -15,7 +15,7 @@ jobs:
       - name: show context
         run:  echo "${{ github.event.merge_group.base_ref }}"
       
-      - run: "git diff --name-only  --submodule=log ${{ github.base_ref || github.event.merge_group.base_ref }} --.github/** || true" 
+      - run: "git diff --name-only  --submodule=log ${{ github.base_ref || github.event.merge_group.sha }} -- .github/** || true" 
       
       - name: Should Fail
         run: ${{ github.event_name == 'pull_request' }}
