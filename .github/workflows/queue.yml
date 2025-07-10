@@ -2,12 +2,23 @@ name: Validate code in the merge queue
 
 on:
   merge_group:
+  pull_request:
 
 jobs:
   validate-pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Merge queue specific check
-        run: echo "✅ This is the merge queue check"
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+     
+      - run: |
+          ls -l .github
+          base_sha="${{ github.base_sha || github.event.merge_group.base_sha }}"
+          git fetch origin "$base_sha"
+          git diff --name-only  --submodule=log $base_sha -- .github/** || true
+      
+      - name: Should Fail
+        run: ${{ github.event_name == 'pull_request' }}
