@@ -12,9 +12,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            .github/**
+            .github
      
       - run: |
+          ls -l .github
           base_sha="${{ github.base_sha || github.event.merge_group.base_sha }}"
           git fetch origin "$base_sha"
           git diff --name-only  --submodule=log $base_sha -- .github/** || true
