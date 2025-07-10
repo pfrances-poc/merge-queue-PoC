@@ -1,0 +1,90 @@
+name: diff-based-env-trigger
+description: |
+  This workflow checks for changes in specified paths against a base commit.
+  If any, it determines which environments should be deployed based on the target branch.
+
+on:
+  workflow_call:
+    inputs:
+      paths:
+        description: "List of paths to monitor (newline-separated)"
+        required: true
+        type: string
+      branch_env_map:
+        description: "Mapping of target branches to environments <branch>=<env> (e.g. 'main=prod\\ndevelop=dev')"
+        required: true
+        type: string
+
+    outputs:
+      matched_envs:
+        description: "Comma-separated list of environments that should be deployed"
+        value: ${{ jobs.check.outputs.matched_envs }}
+
+env:
+  BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      matched_envs: ${{ steps.set.outputs.matched_envs }}
+    steps:
+      - name: Checkout (sparse)
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: ${{ inputs.paths }}
+
+      - name: Fetch base commit
+        run: git fetch origin $BASE_SHA
+
+      - id: set
+        run: |
+          echo "🔍 Diffing against base commit: $BASE_SHA"
+          echo "📁 Paths to monitor:"
+          echo "${{ inputs.paths }}"
+
+          IFS=$'\n' read -r -d '' -a raw_paths <<< "${{ inputs.paths }}"
+          IFS=$'\n' read -r -d '' -a mappings <<< "${{ inputs.branch_env_map }}"
+
+          pathspecs=()
+          for path in "${raw_paths[@]}"; do
+            if [[ -d "$path" || "$path" != *.* ]]; then
+              # Likely a directory — add /**
+              pathspecs+=("$path/**")
+            else
+              # Likely a file — use as is
+              pathspecs+=("$path")
+            fi
+          done
+
+          # Check for file or submodule changes
+          changed_files=$(git diff --name-only --submodule=log $BASE_SHA -- "${pathspecs[@]}")
+          echo "Changed files:"
+          echo "$changed_files"
+
+          matched_envs=()
+
+          # Determine the target branch from the current ref
+          if [[ "${GITHUB_REF}" == refs/pull/* ]]; then
+            branch="${{ github.base_ref }}"
+          else
+            branch=$(echo "${GITHUB_REF}" | sed -E 's#^refs/heads/gh-readonly-queue/([^/]+)/pr-.+#\1#')
+          fi
+
+          echo "📌 Detected target branch: $branch"
+
+          # Match the branch to an environment
+          for line in "${mappings[@]}"; do
+            b=$(echo "$line" | cut -d= -f1)
+            env=$(echo "$line" | cut -d= -f2)
+            if [[ "$b" == "$branch" ]]; then
+              echo "✅ Match found: $b → $env"
+              matched_envs+=("$env")
+            fi
+          done
+
+          if [[ ${#matched_envs[@]} -gt 0 ]]; then
+            echo "matched_envs=${matched_envs[*]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "matched_envs=" >> "$GITHUB_OUTPUT"
+          fi

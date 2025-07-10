@@ -1,16 +1,30 @@
-name: CI
+name: Deploy on change
 
 on:
   pull_request:
-    branches:
-      - main
+  merge_group:
 
 jobs:
-  validate-pr:
+  check:
+    uses: ./.github/workflows/diff-based-env-trigger.yml
+    with:
+      paths: |
+        checked_path
+        README.md
+      branch_env_map: |
+        main=prod
+        develop=dev
+
+  deploy-dev:
+    needs: check
+    if: contains(needs.check.outputs.matched_envs, 'dev')
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - run: echo "🚀 Deploying to dev..."
 
-      - name: Minimal check
-        run: echo "✅ Merge queue check passed!"
+  deploy-prod:
+    needs: check
+    if: contains(needs.check.outputs.matched_envs, 'prod')
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🚀 Deploying to prod..."
