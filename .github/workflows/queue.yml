@@ -13,7 +13,9 @@ jobs:
       - name: Merge queue specific check
         run: echo "✅ This is the merge queue check"
       - name: show context
-        run:  echo "${{ github.event.pull_request.base.ref }}"
+        run:  echo "${{ github.event.merge_group.base_ref }}"
+      - run: "changed_files=$(git diff --name-only  --submodule=log ${{ github.event.merge_group.base_ref }} ${GITHUB_REF} --.github/**  " 
+        
         
       - name: Should Fail
-        run: ${{ github.event_name != 'merge_group' }}
+        run: ${{ github.event_name == 'pull_request' }}
