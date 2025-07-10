@@ -14,7 +14,7 @@ jobs:
         run: echo "✅ This is the merge queue check"
       - name: show context
         run:  echo "${{ github.event.merge_group.base_ref }}"
-      - run: "changed_files=$(git diff --name-only  --submodule=log ${{ github.event.merge_group.base_ref }} ${GITHUB_REF} --.github/**  " 
+      - run: "changed_files=$(git diff --name-only  --submodule=log ${{ github.base_ref || github.event.merge_group.base_ref }} --.github/**  " 
         
         
       - name: Should Fail
