@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Check for intentional failure
         run: |
           if [ -f "test/fail-test" ]; then
@@ -40,27 +40,27 @@ jobs:
             exit 1
           fi
           echo "✅ No failure trigger found, continuing..."
-      
+
       - name: Simulate longer CI (just enough to see batching)
         run: |
           echo "🚀 Simulating your work repo's 30-minute CI (but only 2 minutes for demo)"
           echo "⏱️  In real life: build, tests, security scans, etc."
-          
+
           # Just enough time to see merge queue batching behavior
           echo "📦 Phase 1/4: Building... (normally 7.5min, demo: 30s)"
           sleep 30
-          
-          echo "🧪 Phase 2/4: Unit tests... (normally 7.5min, demo: 30s)" 
+
+          echo "🧪 Phase 2/4: Unit tests... (normally 7.5min, demo: 30s)"
           sleep 30
-          
+
           echo "🔍 Phase 3/4: Integration... (normally 7.5min, demo: 30s)"
           sleep 30
-          
+
           echo "🛡️  Phase 4/4: Security... (normally 7.5min, demo: 30s)"
           sleep 30
-          
+
           echo "✅ Demo complete! (2min instead of 30min - your wallet is safe 💰)"
-      
+
       - name: Final merge queue validation
         run: echo "✅ Ready to merge - CI passed after 2 minutes"
 EOF

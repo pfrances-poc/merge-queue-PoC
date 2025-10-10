@@ -1,0 +1,25 @@
+name: Fast Status Check (Required)
+
+# Ce workflow simule tes tests rapides qui DOIVENT être required
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  fast-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fast tests (required for all PRs)
+        run: |
+          echo "⚡ FAST REQUIRED CHECKS"
+          echo "======================"
+          echo "- Unit tests (2-3 minutes)"
+          echo "- Linting and code quality"
+          echo "- Security scans"
+          echo "- Basic build validation"
+          sleep 5  # Représente des tests rapides
+          echo "✅ Fast checks passed - PR eligible for merge queue"
