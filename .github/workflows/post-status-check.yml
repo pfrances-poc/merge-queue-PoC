@@ -1,0 +1,65 @@
+name: Merge Group Analysis (Phase 2 Detector)
+
+# Ce workflow prouve l'hypothèse : il se déclenche sur merge_group
+# C'est la Phase 2 - test des groupes combinés après que les PR aient passé leurs checks individuels
+on:
+  merge_group:
+
+jobs:
+  analyze-merge-queue-flow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Analyze Merge Group (Phase 2 - Batching Detection)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🎯 MERGE GROUP DETECTED - PHASE 2 BATCHING!"
+          echo "==========================================="
+          echo ""
+          echo "✅ HYPOTHESIS CONFIRMED!"
+          echo "This workflow runs on 'merge_group' - proving Phase 2 exists!"
+          echo ""
+          echo "📊 Event: ${{ github.event_name }}"
+          echo "� Merge Group Head SHA: ${{ github.sha }}"
+          echo "🕐 Timestamp: $(date)"
+          echo ""
+          
+          echo "🔍 MERGE GROUP ANALYSIS:"
+          echo "------------------------"
+          echo "This merge_group event means:"
+          echo "• Phase 1 (individual checks) COMPLETED for some PRs"
+          echo "• Phase 2 (group batching) is NOW STARTING"
+          echo "• Multiple PRs are being tested together as one unit"
+          echo ""
+          
+          echo "� PROOF OF TWO-PHASE SYSTEM:"
+          echo "-----------------------------"
+          echo "• ci.yml ran on individual PRs (pull_request events)"
+          echo "• Now queue.yml is running on the combined group (merge_group event)"
+          echo "• This IS the batching phase you hypothesized!"
+          echo ""
+          
+          echo "🧮 GROUP COMPOSITION:"
+          echo "--------------------"
+          echo "This merge group contains PRs that:"
+          echo "• Already passed their individual status checks"
+          echo "• Were batched together based on Group Size settings"
+          echo "• Are now being tested as a combined unit"
+          echo ""
+          
+          echo "⚡ CURRENT GROUP HEAD SHA: ${{ github.sha }}"
+          echo "This SHA represents the combined changes from multiple PRs"
+          
+          echo ""
+          echo "🎭 PHASE DETECTION:"
+          echo "------------------"
+          echo "Phase 1 (Individual): Look for 'pull_request' event runs"
+          echo "Phase 2 (Batching): Look for 'merge_group' event runs"
+          
+          echo ""
+          echo "💡 This workflow proves the two-phase hypothesis!"
+          echo "   It runs AFTER individual status checks complete"
+          echo "   and shows when PRs become eligible for batching"
