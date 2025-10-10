@@ -9,5 +9,26 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Merge queue specific check
-        run: echo "✅ This is the merge queue check"
+      
+      - name: Simulate long running tests (like your work repo)
+        run: |
+          echo "🚀 Starting long running CI simulation (30 minutes like your work repo)"
+          echo "⏱️  This simulates: build, tests, security scans, etc."
+          
+          # Simulate different phases of a real CI
+          echo "📦 Phase 1/4: Building application..."
+          sleep 450  # 7.5 minutes
+          
+          echo "🧪 Phase 2/4: Running unit tests..."
+          sleep 450  # 7.5 minutes
+          
+          echo "🔍 Phase 3/4: Integration tests..."
+          sleep 450  # 7.5 minutes
+          
+          echo "🛡️  Phase 4/4: Security & quality checks..."
+          sleep 450  # 7.5 minutes
+          
+          echo "✅ All phases completed successfully!"
+      
+      - name: Final merge queue validation
+        run: echo "✅ Ready to merge - CI passed after 30 minutes"
