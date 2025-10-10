@@ -1,0 +1,42 @@
+name: Build & Push ECR (Required Status Check)
+
+# Ce workflow simule le build + push ECR qui EST required status check
+# Il run sur chaque PR individuellement (pas batchable)
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-push-ecr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Simulate Build & Push to ECR (REQUIRED!)
+        run: |
+          echo "SIMULATING BUILD & ECR PUSH (REQUIRED STATUS CHECK)"
+          echo "=================================================="
+          echo "This runs on EVERY PR individually - Cannot be batched"
+          echo ""
+          
+          echo "Phase 1/2: Building application (normally 10+ minutes)..."
+          echo "- Maven/Gradle build with all dependencies"
+          echo "- Docker image creation"
+          echo "- Security scans and vulnerability checks"
+          echo "- Unit tests execution"
+          sleep 30  # Represents 10+ min build
+          
+          echo "Phase 2/2: Pushing to ECR (normally 2-5 minutes)..."
+          echo "- Docker push to ECR registry"
+          echo "- Image tagging with PR number"
+          echo "- Image metadata and labels"
+          echo "- Cleanup temporary artifacts"
+          sleep 15  # Represents ECR push
+          
+          echo "BUILD & ECR PUSH COMPLETE!"
+          echo "NEXT: ECS deployment will be batched in merge queue"
+          echo "BENEFIT: Fast individual validation + Efficient batch deployment"
+      
+      - name: Mark as ready for deployment
+        run: echo "Image ready in ECR - PR can join merge queue for deployment"

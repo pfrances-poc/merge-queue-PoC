@@ -27,7 +27,7 @@ gh pr create \
   --title "💥 FAIL TEST - This should fail CI" \
   --body "This PR is designed to fail CI and test merge queue error handling.
 
-🎯 **Expected behavior**: 
+🎯 **Expected behavior**:
 - This PR should fail during CI
 - If grouped with other PRs, it should cause the group to fail
 - The queue should then retry other PRs individually
@@ -53,14 +53,14 @@ echo "✅ Creating 2 normal PRs that should succeed..."
 
 for i in {1..2}; do
   BRANCH="normal-test-$(date +%s)-$i"
-  
+
   echo "📝 Creating normal PR $i/2 - Branch: $BRANCH"
-  
+
   git checkout -b "$BRANCH"
   echo "Normal test $i - $(date)" > "test/normal-test-$i"
   git add "test/normal-test-$i"
   git commit -m "✅ Normal test $i: Should succeed after fail test"
-  
+
   git push -u origin "$BRANCH"
   gh pr create \
     --base main \
@@ -68,15 +68,15 @@ for i in {1..2}; do
     --title "✅ Normal Test $i - Should succeed" \
     --body "Normal PR that should succeed, created after a failing PR.
 
-🎯 **Expected behavior**: 
+🎯 **Expected behavior**:
 - Should eventually merge successfully
 - Might be affected by the failing PR if grouped together
 - Should demonstrate queue recovery behavior"
-  
+
   gh pr merge --auto --delete-branch "$BRANCH"
   git checkout -f main
   git branch -D "$BRANCH"
-  
+
   echo "✅ Normal PR $i created"
   sleep 5
 done

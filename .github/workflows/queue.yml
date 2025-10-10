@@ -1,34 +1,45 @@
-name: Validate code in the merge queue
+name: ECS Deploy (Batchable)
 
+# Ce workflow simule SEULEMENT le deploy ECS qui N'EST PAS required
+# Il pull les images deja buildees et fait le deploy Blue/Green
 on:
   merge_group:
 
 jobs:
-  validate-pr:
+  deploy-ecs-blue-green:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      - name: Simulate longer CI (just enough to see batching)
+      - name: Simulate ECS Blue/Green Deploy (BATCHABLE!)
         run: |
-          echo "🚀 Simulating your work repo's 30-minute CI (but only 2 minutes for demo)"
-          echo "⏱️  In real life: build, tests, security scans, etc."
+          echo "SIMULATING BATCHABLE ECS DEPLOYMENT"
+          echo "====================================="
+          echo "This runs ONLY when PRs are batched in merge queue"
+          echo ""
           
-          # Just enough time to see merge queue batching behavior
-          echo "📦 Phase 1/4: Building... (normally 7.5min, demo: 30s)"
-          sleep 30
+          echo "Phase 1/3: Pulling images from ECR (already built!)..."
+          echo "- Images were built during individual PR status checks"
+          echo "- Pull all images for this batch of PRs"
+          echo "- Validate image integrity"
+          sleep 10  # Quick image pull
           
-          echo "🧪 Phase 2/4: Unit tests... (normally 7.5min, demo: 30s)" 
-          sleep 30
+          echo "Phase 2/3: ECS Blue/Green Deployment (5-10 minutes)..."
+          echo "- Deploy multiple PR changes together"
+          echo "- Blue/Green deployment strategy"
+          echo "- Progressive traffic switching"
+          sleep 30  # Represents actual deployment time
           
-          echo "🔍 Phase 3/4: Integration... (normally 7.5min, demo: 30s)"
-          sleep 30
+          echo "Phase 3/3: Health checks and validation..."
+          echo "- Service health validation"
+          echo "- End-to-end testing"
+          echo "- Rollback capability confirmed"
+          sleep 15  # Health checks
           
-          echo "🛡️  Phase 4/4: Security... (normally 7.5min, demo: 30s)"
-          sleep 30
-          
-          echo "✅ Demo complete! (2min instead of 30min - your wallet is safe 💰)"
+          echo "BATCH DEPLOYMENT COMPLETE!"
+          echo "BENEFIT: Multiple PRs deployed together - No cancellations!"
+          echo "TIME SAVED: One 55s deploy vs multiple 55s deploys"
       
       - name: Final merge queue validation
-        run: echo "✅ Ready to merge - CI passed after 30 minutes"
+        run: echo "Ready to merge - ECS deployment successful"

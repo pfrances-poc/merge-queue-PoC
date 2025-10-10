@@ -24,14 +24,14 @@ echo ""
 # Créer 4 PR rapidement
 for i in {1..4}; do
   BRANCH="forced-batch-$(date +%s)-$i"
-  
+
   echo "📝 Création PR $i/4 - Branch: $BRANCH"
-  
+
   git checkout -b "$BRANCH"
   echo "Forced batch test $i - $(date)" > "test/forced-batch-$i"
   git add "test/forced-batch-$i"
   git commit -m "🧪 Forced batch test $i: Test minimum group size behavior"
-  
+
   git push -u origin "$BRANCH"
   gh pr create \
     --base main \
@@ -39,7 +39,7 @@ for i in {1..4}; do
     --title "🧪 Forced Batch $i - Min Group Size Test" \
     --body "Test PR for forced batching with Min Group Size = 3
 
-🎯 **Expected behavior**: 
+🎯 **Expected behavior**:
 - This PR should WAIT until 3 PRs are accumulated
 - Then all 3+ PRs should be tested together in one CI run
 - The 4th PR should either join the group or wait for the next batch
@@ -48,13 +48,13 @@ for i in {1..4}; do
 - PRs accumulating without immediate CI runs
 - One CI run testing multiple PRs together
 - Grouped merge commits"
-  
+
   gh pr merge --auto --delete-branch "$BRANCH"
   git checkout -f main
   git branch -D "$BRANCH"
-  
+
   echo "✅ PR $i created and queued"
-  
+
   # Attendre juste 5 secondes entre chaque PR
   if [ $i -lt 4 ]; then
     echo "⏸️  Waiting 5 seconds..."

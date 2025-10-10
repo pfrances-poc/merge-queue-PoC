@@ -20,7 +20,7 @@ jobs:
           echo "🕵️ QUEUE ELIGIBILITY DETECTOR"
           echo "============================="
           echo ""
-          
+
           # Trouver le numéro de PR
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             PR_NUM=${{ github.event.number }}
@@ -28,40 +28,40 @@ jobs:
             # Pour check_suite, chercher la PR associée
             PR_NUM=$(gh pr list --state open --json number,headRefName | jq -r '.[] | select(.headRefName == "${{ github.head_ref }}") | .number' | head -1)
           fi
-          
+
           if [ "$PR_NUM" = "" ] || [ "$PR_NUM" = "null" ]; then
             echo "ℹ️  No PR found for this event"
             exit 0
           fi
-          
+
           echo "🎯 Analyzing PR #$PR_NUM"
           echo "----------------------"
-          
+
           # Récupérer l'état de la PR
           PR_DATA=$(gh pr view $PR_NUM --json number,title,mergeable,mergeStateStatus,statusCheckRollup)
-          
+
           echo "📋 PR: $(echo "$PR_DATA" | jq -r '.title')"
           echo "🔄 Merge State: $(echo "$PR_DATA" | jq -r '.mergeStateStatus')"
           echo ""
-          
+
           # Analyser les status checks requis
           CHECKS=$(echo "$PR_DATA" | jq '.statusCheckRollup')
-          
+
           echo "📊 STATUS CHECKS ANALYSIS:"
           echo "-------------------------"
-          
+
           # Compter les checks par état
           SUCCESS_COUNT=$(echo "$CHECKS" | jq '[.[] | select(.conclusion == "SUCCESS")] | length')
           PENDING_COUNT=$(echo "$CHECKS" | jq '[.[] | select(.status == "IN_PROGRESS" or .status == "QUEUED" or .status == "PENDING")] | length')
           FAILED_COUNT=$(echo "$CHECKS" | jq '[.[] | select(.conclusion == "FAILURE" or .conclusion == "CANCELLED")] | length')
           TOTAL_COUNT=$(echo "$CHECKS" | jq 'length')
-          
+
           echo "✅ Success: $SUCCESS_COUNT"
-          echo "⏳ Pending: $PENDING_COUNT" 
+          echo "⏳ Pending: $PENDING_COUNT"
           echo "❌ Failed: $FAILED_COUNT"
           echo "📊 Total: $TOTAL_COUNT"
           echo ""
-          
+
           # Déterminer l'éligibilité
           if [ "$PENDING_COUNT" -eq 0 ] && [ "$FAILED_COUNT" -eq 0 ] && [ "$SUCCESS_COUNT" -gt 0 ]; then
             echo "🎉 QUEUE ELIGIBILITY: READY!"
@@ -76,21 +76,21 @@ jobs:
             echo "• If queue.yml passes: All PRs in group merge atomically"
             echo ""
             echo "📈 NEXT PHASE: Watch for merge_group events and queue.yml runs"
-            
+
             # Regarder combien d'autres PR sont aussi prêtes
             echo ""
             echo "🔍 OTHER READY PRS:"
             echo "------------------"
             gh pr list --state open --json number,title,statusCheckRollup | \
               jq -r '.[] | select(.number != '$PR_NUM') | select(.statusCheckRollup | map(select(.conclusion != "SUCCESS")) | length == 0) | select(.statusCheckRollup | length > 0) | "PR #\(.number): \(.title)"' || echo "No other PRs ready yet"
-            
+
           elif [ "$PENDING_COUNT" -gt 0 ]; then
             echo "⏳ QUEUE ELIGIBILITY: WAITING"
             echo "============================"
             echo ""
             echo "Status checks still running..."
             echo "PR not yet eligible for merge queue"
-            
+
           else
             echo "❌ QUEUE ELIGIBILITY: BLOCKED"
             echo "============================="
