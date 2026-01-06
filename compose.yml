@@ -1,0 +1,13 @@
+services:
+  debian:
+    build:
+      args:
+        - USER_ID=${UID:-1001}
+        - GROUP_ID=${GID:-${UID:-1001}}
+      inline: |
+        FROM debian:latest
+        RUN useradd -u ${USER_ID} -g ${GROUP_ID} -m appuser
+        USER appuser
+
+    command: id -u && id -g
+

@@ -1,0 +1,21 @@
+name: Run Docker Tests
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  run-docker-tests:
+    name: Run Docker Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Start App & DB Containers
+        run: |
+          docker compose up
