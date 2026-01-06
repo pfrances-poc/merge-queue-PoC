@@ -18,4 +18,5 @@ jobs:
 
       - name: Start App & DB Containers
         run: |
+          export UID GID
           docker compose up
